@@ -13,11 +13,24 @@ window.addEventListener('submit', event => {
 
 })
 
-form.addEventListener('submit', validate)
+form.addEventListener('submit', event => {
+    event.preventDefault()
+    formIsValid = true
 
+    if (formIsValid) {
+        displayTotal()
+    }
+})
+
+
+const displayTotal = () => {
+    const total = totalExpense ()
+    const totalDiv = document.querySelector('#total')
+    totalDiv.classList.add('cost')
+    totalDiv.innerHTML = `<p>Your total cost is $${total}</p>`
+}
 
 function validate (event) {
-    // removeValidMessage()
     formIsValid = true
     confirmValidForm()
 }
@@ -30,14 +43,29 @@ function confirmValidForm() {
 }
 
 function totalExpense() {
-    const totalDays = document.querySelector('#days').value
-    let startDate = document.querySelector('#start-date').valueAsDate
-    let startDay = startDate.getDay()
-    console.log("day of the week", startDay)
-    console.log("start date", typeof startDate, startDate)
-    getParkingDates(startDate, totalDays)
+    const totalDays = parseInt(document.querySelector('#days').value, 10);
+    console.log("total days is", totalDays)
+    let startDate = document.querySelector('#start-date').value
+    console.log('testing the start day array', startDate)
+    let days =[]
+    let day = new Date(startDate)
+
+    for (let i = 1; i <= totalDays; i++) {
+        day = new Date(day.setDate(day.getDate() +1))
+        days.push(day.getDay())
+    }
+
+    // let startDay = startDate.getDay()
+    // console.log("day of the week", startDay)
+    // console.log("start date", typeof startDate, startDate)
+    // getParkingDates(startDate, totalDays)
     let fullPrice = totalDays * price
-    return `Your total cost is $ ${fullPrice}`
+    // return `Your total cost is $ ${fullPrice}`
+    return days
+    .map(day => (day > 0 && day < 6 ? 5:7))
+    .reduce((fullPrice, cost) => {
+        return (fullPrice += cost)
+}, 0)
 
 }
 
